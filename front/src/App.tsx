@@ -1,16 +1,10 @@
-import StarsBackground from './StarsBackground'
-import Hologram from './Hologram'
+import Visuals from './Visuals'
 
 function App() {
   return (
-    <div className="relative h-screen overflow-hidden">
-      <div className="absolute inset-0 -z-20">
-        <StarsBackground />
-      </div>
-      <div className="absolute inset-0 z-10">
-        <Hologram />
-      </div>
-    </div>
+    <Visuals height={320} title=''>
+      test
+    </Visuals>
   );
 }
 

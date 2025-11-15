@@ -2,29 +2,37 @@ import { Stage, Layer } from 'react-konva';
 import Konva from 'konva';
 import { useEffect, useRef } from 'react';
 
-const WIDTH = window.innerWidth
-const HEIGHT = window.innerHeight
+const MARGIN = 20;
+const LINES_SPEED = 0.15;
+const LINES_WIDTH = 2;
+const LINES_GAP = 2;
 
-function getOpacity(y: number) {
-  if (y < 20) {
-    return (y) / 100;
-  } else if (y > 450 - 20) {
-    return (450 - y) / 100;
-  }
-  return 0.2;
+interface Props {
+  width: number;
+  height: number;
 }
 
-const Hologram = () => {
+const Hologram = (props: Props) => {
   const holo = useRef<any>(null);
   
+  function getOpacity(y: number) {
+    if (y < MARGIN) {
+      return (y) / 100;
+    } else if (y > props.height - MARGIN) {
+      return (props.height - y) / 100;
+    }
+    return 0.2;
+  }
+  
   useEffect(() => {
-    for (let i = 0; i < 100; i++) {
-      const y = i * 4.5;
+    const lines_number = Math.round(props.height / LINES_WIDTH / LINES_GAP);
+    for (let i = 0; i < lines_number; i++) {
+      const y = i * LINES_WIDTH * LINES_GAP;
       const rect = new Konva.Rect({
         x: 0,
         y: y,
-        width: WIDTH,
-        height: 2,
+        width: props.width,
+        height: LINES_WIDTH,
         fill: '#0459c9ff',
         opacity: getOpacity(y),
       });
@@ -33,11 +41,11 @@ const Hologram = () => {
 
     const anim = new Konva.Animation(() => {
       holo.current?.children?.forEach((line: any) => {
-        const speed = 0.15;
         const y = line.y();
         line.opacity(getOpacity(y));
-        line.y(y + speed);
-        if (y > 450) {
+        line.y(y + LINES_SPEED);
+        line.width(props.width);
+        if (y > props.height) {
           line.opacity(0);
           line.y(0);
         }
@@ -49,20 +57,15 @@ const Hologram = () => {
   }, [])
 
   return (
-    <Stage
-      width={WIDTH}
-      height={HEIGHT}
-      listening={false}
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-      }}
-    >
-      <Layer ref={holo} />
-    </Stage>
+    <div className="flex justify-center items-center w-full h-full">
+      <Stage
+        width={props.width}
+        height={props.height}
+        listening={false}
+      >
+        <Layer ref={holo} />
+      </Stage>
+    </div>
   )
 }
 
